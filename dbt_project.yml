@@ -1,16 +1,9 @@
+# dbt_project.yml
 
-# Name your project! Project names should contain only lowercase characters
-# and underscores. A good package name should reflect your organization's
-# name or the intended use of these models
 name: 'brasil_dbt'
 version: '1.0.0'
-
-# This setting configures which "profile" dbt uses for this project.
 profile: 'brasil_dbt'
 
-# These configurations specify where dbt should look for different types of files.
-# The `model-paths` config, for example, states that models in this project can be
-# found in the "models/" directory. You probably won't need to change these!
 model-paths: ["models"]
 analysis-paths: ["analyses"]
 test-paths: ["tests"]
@@ -18,21 +11,24 @@ seed-paths: ["seeds"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
 
-clean-targets:         # directories to be removed by `dbt clean`
+clean-targets:
   - "target"
   - "dbt_packages"
 
-# Configuring models
-# Full documentation: https://docs.getdbt.com/docs/configuring-models
+# Configuration des seeds pour qu'ils soient chargés dans le bon dataset
+seeds:
+  brasil_dbt:
+    +schema: "{{ 'e_com_prod' if target.name == 'prod' else 'e_com_dev' }}"
 
-# In this example config, we tell dbt to build all models in the example/
-# directory as views. These settings can be overridden in the individual model
-# files using the `{{ config(...) }}` macro.
+# Configuration des modèles
 models:
   brasil_dbt:
     staging:
       +materialized: view
+      +schema: "{{ 'e_com_prod' if target.name == 'prod' else 'e_com_dev' }}"
     intermediate:
       +materialized: view
+      +schema: "{{ 'e_com_prod' if target.name == 'prod' else 'e_com_dev' }}"
     mart:
       +materialized: table
+      +schema: "{{ 'e_com_prod' if target.name == 'prod' else 'e_com_dev' }}"
