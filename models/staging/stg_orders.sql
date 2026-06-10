@@ -1,6 +1,6 @@
 {{ config(materialized='view') }}
 with source as (
-    select * from {{ ref('olist_orders') }}
+    select * from {{ source('olist', 'orders') }}
 ),
 
 renamed as (

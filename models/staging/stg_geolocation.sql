@@ -1,7 +1,8 @@
 {{ config(materialized='view') }}
 
 with source as (
-    select * from {{ ref('olist_geolocation') }}
+    select * from {{ source('olist', 'geolocation') }}
+        
 ),
 
 renamed as (

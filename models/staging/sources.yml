@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: olist
     description: "Dataset public e-commerce brésilien Olist (2016-2018)"
-    schema: e_com_dev
+    schema: "{{ 'e_com_prod' if target.name == 'prod' else 'e_com_dev' }}"
     tables:
       - name: customers
         identifier: olist_customers
