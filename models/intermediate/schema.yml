@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: int_orders_enriched
+    description: >
+      Commandes enrichies avec les informations client, les agrégats de paiements
+      et les agrégats d'avis. Grain : une ligne par commande.
+    columns:
+      - name: order_id
+        tests: [unique, not_null]
+      - name: customer_id
+        tests: [not_null]
+      - name: customer_unique_id
+        tests: [not_null]
+      - name: order_status
+        tests: [not_null]
+      - name: total_payment_value
+        description: "Somme de tous les paiements associés à la commande"
+      - name: avg_review_score
+        description: "Score moyen des avis (1-5) — null si aucun avis"
+      - name: delivery_days
+        description: "Nombre de jours entre l'achat et la livraison effective"
+      - name: days_early_vs_estimate
+        description: "Positif = livraison avant la date estimée, négatif = livraison en retard"
+
+  - name: int_order_items_enriched
+    description: >
+      Lignes de commande enrichies avec les attributs produit, la catégorie traduite
+      en anglais et les informations vendeur. Grain : une ligne par (order_id, order_item_id).
+    columns:
+      - name: order_id
+        tests: [not_null]
+      - name: order_item_id
+        tests: [not_null]
+      - name: product_id
+        tests: [not_null]
+      - name: seller_id
+        tests: [not_null]
+      - name: total_item_value
+        description: "price + freight_value"
+      - name: product_category_name_english
+        description: "Catégorie en anglais — fallback sur le portugais si traduction absente"

@@ -1,0 +1,102 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: >
+      Dimension clients — un enregistrement par client unique (customer_unique_id).
+      Agrège l'ensemble de l'historique de commandes et des avis.
+    columns:
+      - name: customer_unique_id
+        tests: [unique, not_null]
+      - name: city
+        tests: [not_null]
+      - name: state
+        tests: [not_null]
+      - name: total_orders
+        description: "Nombre total de commandes passées par ce client"
+        tests: [not_null]
+      - name: lifetime_value
+        description: "Valeur totale dépensée (somme des paiements)"
+      - name: avg_review_score
+        description: "Score moyen sur toutes les commandes reviewées"
+
+  - name: dim_sellers
+    description: >
+      Dimension vendeurs — un enregistrement par seller_id.
+      Inclut géolocalisation et métriques de vente agrégées.
+    columns:
+      - name: seller_id
+        tests: [unique, not_null]
+      - name: city
+        tests: [not_null]
+      - name: state
+        tests: [not_null]
+      - name: total_orders
+        tests: [not_null]
+      - name: total_revenue
+        description: "CA total généré par le vendeur (hors frais de port)"
+
+  - name: dim_products
+    description: >
+      Dimension produits — un enregistrement par product_id.
+      Inclut attributs physiques, catégorie traduite et métriques de vente.
+    columns:
+      - name: product_id
+        tests: [unique, not_null]
+      - name: product_category_name_english
+        description: "Catégorie en anglais — fallback sur le nom portugais si absent"
+      - name: total_orders
+        tests: [not_null]
+      - name: avg_price
+        description: "Prix moyen de vente observé pour ce produit"
+
+  - name: fct_orders
+    description: >
+      Table de faits commandes — grain : une ligne par order_id.
+      Contient toutes les métriques de la commande : paiements, livraison,
+      satisfaction client et résumé des lignes produit.
+    columns:
+      - name: order_id
+        tests: [unique, not_null]
+      - name: customer_id
+        tests: [not_null]
+      - name: customer_unique_id
+        tests: [not_null]
+      - name: order_status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['delivered', 'shipped', 'canceled', 'unavailable', 'invoiced', 'processing', 'approved', 'created']
+      - name: total_payment_value
+        description: "Montant total payé toutes méthodes confondues"
+      - name: item_count
+        description: "Nombre de lignes produit dans la commande"
+      - name: delivery_days
+        description: "Délai de livraison en jours (purchase → delivered)"
+      - name: days_early_vs_estimate
+        description: "Positif = livré avant la date estimée"
+
+  - name: fct_order_items
+    description: >
+      Table de faits lignes de commande — grain : une ligne par (order_id, order_item_id).
+      Enrichie avec les attributs produit, vendeur et contexte de commande.
+    columns:
+      - name: order_id
+        tests: [not_null]
+      - name: order_item_id
+        tests: [not_null]
+      - name: product_id
+        tests: [not_null]
+      - name: seller_id
+        tests: [not_null]
+      - name: customer_unique_id
+        tests: [not_null]
+      - name: price
+        tests: [not_null]
+      - name: freight_value
+        tests: [not_null]
+      - name: total_item_value
+        description: "price + freight_value"
+        tests: [not_null]
+      - name: product_category_name_english
+        description: "Catégorie produit en anglais"

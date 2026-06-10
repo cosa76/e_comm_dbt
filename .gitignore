@@ -1,0 +1,24 @@
+# dbt
+target/
+dbt_packages/
+logs/
+*.log
+
+# Seeds (générés dynamiquement par le script Python)
+
+# Secrets
+sa_dbt.json
+.env
+profiles.yml
+secrets.toml
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+# Ajouté par save_to_github.py
+*.json
+service_account*.json
+.user.yml
+seeds/*.csv
+.DS_Store
