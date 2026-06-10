@@ -1,5 +1,3 @@
-# dbt_project.yml
-
 name: 'brasil_dbt'
 version: '1.0.0'
 profile: 'brasil_dbt'
@@ -15,20 +13,19 @@ clean-targets:
   - "target"
   - "dbt_packages"
 
-# Configuration des seeds pour qu'ils soient chargés dans le bon dataset
+# ─── SEEDS ───────────────────────────────────────────────────────────────────
+# ⭐ PAS de +schema = dbt utilise directement le dataset du profiles.yml
 seeds:
   brasil_dbt:
-    +schema: "{{ 'e_com_prod' if target.name == 'prod' else 'e_com_dev' }}"
+    # Rien ici, ou juste des configs de colonnes si besoin
 
-# Configuration des modèles
+# ─── MODÈLES ─────────────────────────────────────────────────────────────────
+# ⭐ PAS de +schema = dbt utilise directement le dataset du profiles.yml
 models:
   brasil_dbt:
     staging:
       +materialized: view
-      +schema: "{{ 'e_com_prod' if target.name == 'prod' else 'e_com_dev' }}"
     intermediate:
       +materialized: view
-      +schema: "{{ 'e_com_prod' if target.name == 'prod' else 'e_com_dev' }}"
     mart:
       +materialized: table
-      +schema: "{{ 'e_com_prod' if target.name == 'prod' else 'e_com_dev' }}"
